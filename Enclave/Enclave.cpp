@@ -39,7 +39,6 @@
 
 Entry DFA[MAX_STATES*MAX_STATES] = {0};
 int DFASize;
-Oram_Block LinScan[MAX_STATES];
 Oram_Bucket ORAM[MAX_STATES];
 unsigned int posMap[MAX_STATES];
 Oram_Block stash[STASH_SPACE];
@@ -162,6 +161,7 @@ int initDFA(int size){ //initialize or reset DFA and ORAM
     accepting = 0;
     memset(posMap, 0, MAX_STATES*4);
     memset(ORAM, 0, MAX_STATES*sizeof(Oram_Bucket));
+    //memset(LinScan, 0, MAX_STATES*sizeof(Oram_Block));
     memset(stash, 0, STASH_SPACE*sizeof(Oram_Block));
     state = 0;
     
@@ -185,13 +185,6 @@ int opOram(int index, Oram_Block* block, int write){ //the actual oram ops
     
 }
 
-int opOramLinear(int index, Oram_Block* block, int write){ //
-    
-}
-
-int opOramDebug(){
-    
-}
 
 int opDFA(char input){ //return >0 if accepting state, 0 otherwise
         int change = 0;
