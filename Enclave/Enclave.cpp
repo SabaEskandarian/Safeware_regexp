@@ -315,7 +315,16 @@ int opDFA(char input){ //return >0 if accepting state, 0 otherwise
         int change = 0, changed = 0;
         int oldAcc = accepting;
         accepting = 0;
-        opOram(state, &block, 0);
+        //opOram(state, &block, 0);
+        //linear scan
+        memset(&block, 0, sizeof(Oram_Block));
+        int match = 0;
+        for(int i = 0; i < MAX_STATES; i++){
+            match = (i == state);
+            for(int j = 0; j < 256*sizeof(Entry); j++){
+                ((uint8_t*)&block.transitions)[j] += (match * ((uint8_t*)(&DFA[i*256]))[j]);
+            }
+        }
 
         for(int i = 0; i < 256; i++){
             changed = change || changed;

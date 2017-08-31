@@ -258,8 +258,8 @@ int SGX_CDECL main(int argc, char *argv[])
     printf("preparing automata\n");
     prepDFA(global_eid, &status);
     
-    printf("initializing automata\n");
-    initDFA(global_eid, &status);
+    //printf("initializing automata\n");
+    //initDFA(global_eid, &status);
     
     printf("running automata\n");
     time_t startTime, endTime;

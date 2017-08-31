@@ -44,7 +44,7 @@
 extern "C" {
 #endif
     
-#define MAX_STATES 15 //size of block in terms of entries
+#define MAX_STATES 511 //size of block in terms of entries
 #define BUCKET_SIZE 4
 #define STASH_SPACE 128 //should be something like 90+4*log_2(MAX_STATES) for 2^-80 prob of failure on each access, but make it a power of 2
     
