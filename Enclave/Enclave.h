@@ -55,7 +55,7 @@ typedef struct{
     
 typedef struct{
 	int actualAddr;
-	Entry transitions[MAX_STATES];//possibility that every node transitions on each symbol to another state
+	Entry transitions[256];//possibility of a different transition for each symbol
 	unsigned int leaf; //we have each block keep track of its leaf to avoid a bunch of linear scans of the posMap
 } Oram_Block;
 
@@ -63,7 +63,7 @@ typedef struct{
 	Oram_Block blocks[BUCKET_SIZE];
 } Oram_Bucket;
 
-extern Entry DFA[MAX_STATES*MAX_STATES];
+extern Entry DFA[MAX_STATES*256];
 extern Oram_Bucket ORAM[MAX_STATES];
 extern unsigned int posMap[MAX_STATES];
 extern Oram_Block stash[2*STASH_SPACE];

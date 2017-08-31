@@ -292,7 +292,7 @@ int SGX_CDECL main(int argc, char *argv[])
     time_t startTime, endTime;
 	double elapsedTime;
     startTime = clock();
-    runDFA(global_eid, &acceptLoc, s4, l4);
+    runDFA(global_eid, &acceptLoc, s2, l2);
     endTime = clock();
 	elapsedTime = (double)(endTime - startTime)/(CLOCKS_PER_SEC);
     printf("running time: %.5fs\n", elapsedTime);

@@ -37,7 +37,7 @@
 #include "Enclave_t.h"  /* print_string */
 
 
-Entry DFA[MAX_STATES*MAX_STATES] = {0};
+Entry DFA[MAX_STATES*256] = {0};
 Oram_Bucket ORAM[MAX_STATES];
 unsigned int posMap[MAX_STATES];
 Oram_Block stash[2*STASH_SPACE];
@@ -87,69 +87,69 @@ int prepDFA(){ //our hard-coded regex: *D.?A.?R.?P.?A*
     //state 0
     DFA[0].state = 1;
     DFA[0].transition = 'D';
-    //for(int i = 0; i < MAX_STATES; i++){DFA[i].state = 0; DFA[i] = 0;}
+    //for(int i = 0; i < 256; i++){DFA[i].state = 0; DFA[i] = 0;}
     //state 1
-    DFA[MAX_STATES].state = 1;
-    DFA[MAX_STATES].transition = 'D';
-    DFA[MAX_STATES+1].state = 3;
-    DFA[MAX_STATES+1].transition = 'A';
-    DFA[MAX_STATES+2].state = 2;
-    DFA[MAX_STATES+2].transition = 0;
-    //for(int i = MAX_STATES+3; i < 2*MAX_STATES; i++){DFA[i].state = 0; DFA[i].transition = 0;}
+    DFA[256].state = 1;
+    DFA[256].transition = 'D';
+    DFA[256+1].state = 3;
+    DFA[256+1].transition = 'A';
+    DFA[256+2].state = 2;
+    DFA[256+2].transition = 0;
+    //for(int i = 256+3; i < 2*256; i++){DFA[i].state = 0; DFA[i].transition = 0;}
     //state 2
-    DFA[2*MAX_STATES].state = 1;
-    DFA[2*MAX_STATES].transition = 'D';
-    DFA[2*MAX_STATES+1].state = 3;
-    DFA[2*MAX_STATES+1].transition = 'A';
-    //for(int i = 2*MAX_STATES+2; i < 3*MAX_STATES; i++){DFA[i].state = 0; DFA[i].transition = 0;}
+    DFA[2*256].state = 1;
+    DFA[2*256].transition = 'D';
+    DFA[2*256+1].state = 3;
+    DFA[2*256+1].transition = 'A';
+    //for(int i = 2*256+2; i < 3*256; i++){DFA[i].state = 0; DFA[i].transition = 0;}
     //state 3
-    DFA[3*MAX_STATES].state = 1;
-    DFA[3*MAX_STATES].transition = 'D';
-    DFA[3*MAX_STATES+1].state = 5;
-    DFA[3*MAX_STATES+1].transition = 'R';
-    DFA[3*MAX_STATES+2].state = 4;
-    DFA[3*MAX_STATES+2].transition = 0;
-    //for(int i = 3*MAX_STATES+3; i < 4*MAX_STATES; i++){DFA[i].state = 0; DFA[i].transition = 0;}
+    DFA[3*256].state = 1;
+    DFA[3*256].transition = 'D';
+    DFA[3*256+1].state = 5;
+    DFA[3*256+1].transition = 'R';
+    DFA[3*256+2].state = 4;
+    DFA[3*256+2].transition = 0;
+    //for(int i = 3*256+3; i < 4*256; i++){DFA[i].state = 0; DFA[i].transition = 0;}
     //state 4
-    DFA[4*MAX_STATES].state = 1;
-    DFA[4*MAX_STATES].transition = 'D';
-    DFA[4*MAX_STATES+1].state = 5;
-    DFA[4*MAX_STATES+1].transition = 'R';
-    //for(int i = 4*MAX_STATES+2; i < 5*MAX_STATES; i++){DFA[i].state = 0; DFA[i].transition = 0;}
+    DFA[4*256].state = 1;
+    DFA[4*256].transition = 'D';
+    DFA[4*256+1].state = 5;
+    DFA[4*256+1].transition = 'R';
+    //for(int i = 4*256+2; i < 5*256; i++){DFA[i].state = 0; DFA[i].transition = 0;}
     //state 5
-    DFA[5*MAX_STATES].state = 1;
-    DFA[5*MAX_STATES].transition = 'D';
-    DFA[5*MAX_STATES+1].state = 7;
-    DFA[5*MAX_STATES+1].transition = 'P';
-    DFA[5*MAX_STATES+2].state = 6;
-    DFA[5*MAX_STATES+2].transition = 0;
-    //for(int i = 5*MAX_STATES+3; i < 6*MAX_STATES; i++){DFA[i].state = 0; DFA[i].transition = 0;}
+    DFA[5*256].state = 1;
+    DFA[5*256].transition = 'D';
+    DFA[5*256+1].state = 7;
+    DFA[5*256+1].transition = 'P';
+    DFA[5*256+2].state = 6;
+    DFA[5*256+2].transition = 0;
+    //for(int i = 5*256+3; i < 6*256; i++){DFA[i].state = 0; DFA[i].transition = 0;}
     //state 6
-    DFA[6*MAX_STATES].state = 1;
-    DFA[6*MAX_STATES].transition = 'D';
-    DFA[6*MAX_STATES+1].state = 7;
-    DFA[6*MAX_STATES+1].transition = 'P';
-    //for(int i = 6*MAX_STATES+2; i < 7*MAX_STATES; i++){DFA[i].state = 0; DFA[i].transition = 0;}
+    DFA[6*256].state = 1;
+    DFA[6*256].transition = 'D';
+    DFA[6*256+1].state = 7;
+    DFA[6*256+1].transition = 'P';
+    //for(int i = 6*256+2; i < 7*256; i++){DFA[i].state = 0; DFA[i].transition = 0;}
     //state 7
-    DFA[7*MAX_STATES].state = 1;
-    DFA[7*MAX_STATES].transition = 'D';
-    DFA[7*MAX_STATES+1].state = 9;
-    DFA[7*MAX_STATES+1].transition = 'A';
-    DFA[7*MAX_STATES+2].state = 8;
-    DFA[7*MAX_STATES+2].transition = 0;
-    //for(int i = 7*MAX_STATES+3; i < 8*MAX_STATES; i++){DFA[i].state = 0; DFA[i].transition = 0;}
+    DFA[7*256].state = 1;
+    DFA[7*256].transition = 'D';
+    DFA[7*256+1].state = 9;
+    DFA[7*256+1].transition = 'A';
+    DFA[7*256+2].state = 8;
+    DFA[7*256+2].transition = 0;
+    //for(int i = 7*256+3; i < 8*256; i++){DFA[i].state = 0; DFA[i].transition = 0;}
     //state 8
-    DFA[8*MAX_STATES].state = 1;
-    DFA[8*MAX_STATES].transition = 'D';
-    DFA[8*MAX_STATES+1].state = 9;
-    DFA[8*MAX_STATES+1].transition = 'A';
-    //for(int i = 8*MAX_STATES+2; i < 9*MAX_STATES; i++){DFA[i].state = 0; DFA[i].transition = 0;}
+    DFA[8*256].state = 1;
+    DFA[8*256].transition = 'D';
+    DFA[8*256+1].state = 9;
+    DFA[8*256+1].transition = 'A';
+    //for(int i = 8*256+2; i < 9*256; i++){DFA[i].state = 0; DFA[i].transition = 0;}
     //state 9
-    DFA[9*MAX_STATES].state = 9;
-    DFA[9*MAX_STATES].transition = 0;
-    //for(int i = 9*MAX_STATES+1; i < 10*MAX_STATES; i++){DFA[i].state = 0; DFA[i].transition = 0;}
+    DFA[9*256].state = 9;
+    DFA[9*256].transition = 0;
+    //for(int i = 9*256+1; i < 10*256; i++){DFA[i].state = 0; DFA[i].transition = 0;}
     //rest of space 
-    //for(int i = 10*MAX_STATES; i < MAX_STATES*MAX_STATES; i++){DFA[i].state = 0; DFA[i].transition = 0;}
+    //for(int i = 10*256; i < 256*256; i++){DFA[i].state = 0; DFA[i].transition = 0;}
     
     return 0;
 }
@@ -184,7 +184,7 @@ int initDFA(){ //initialize or reset DFA and ORAM
     //read in DFA row by row and put in ORAM
     for(int i = 0; i < MAX_STATES; i++){
         block.actualAddr = i;
-        memcpy(&(block.transitions), &DFA[i*MAX_STATES], sizeof(Oram_Block) - 8);
+        memcpy(&(block.transitions), &DFA[i*256], 256*sizeof(Entry));
         //printf("oram results: %d %d %d %c\n", block.actualAddr, block.transitions[1].state, block.leaf, block.transitions[1].transition);
         opOram(i, &block, 1);
     }
@@ -340,7 +340,7 @@ int opDFA(char input){ //return >0 if accepting state, 0 otherwise
         opOram(state, &block, 0);
                 //printf("oram results: %d %d %d %c\n", block.actualAddr, block.transitions[0].state, block.leaf, block.transitions[0].transition);
 
-        for(int i = 0; i < MAX_STATES; i++){
+        for(int i = 0; i < 256; i++){
             changed = change || changed;
             change = (input == block.transitions[i].transition);
             change = change || (block.transitions[i].transition == 0 && !changed);
