@@ -60,6 +60,8 @@ enclave {
     };
     
     trusted{
+        public int prepDFA(); //prepare DFA for reading in (only needs to be run once)
+        public int initDFA(); //start up or reboot the DFA
         public int runDFA([in,size=length]char* data, int length);
     };
 

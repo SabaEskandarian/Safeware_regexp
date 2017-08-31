@@ -41,6 +41,8 @@
 #include "sgx_urts.h"
 #include "App.h"
 #include "Enclave_u.h"
+#include <time.h>
+
 
 /* Global EID shared by multiple threads */
 sgx_enclave_id_t global_eid = 0;
@@ -237,29 +239,77 @@ int SGX_CDECL main(int argc, char *argv[])
 
     /* Initialize the enclave */
     if(initialize_enclave() < 0){
-        printf("Enter a character before exit ...\n");
-        getchar();
+        //printf("Enter a character before exit ...\n");
+        //getchar();
         return -1; 
     }
  
     /* Utilize edger8r attributes */
-    edger8r_array_attributes();
-    edger8r_pointer_attributes();
-    edger8r_type_attributes();
-    edger8r_function_attributes();
+    //edger8r_array_attributes();
+    //edger8r_pointer_attributes();
+    //edger8r_type_attributes();
+    //edger8r_function_attributes();
     
     /* Utilize trusted libraries */
-    ecall_libc_functions();
-    ecall_libcxx_functions();
-    ecall_thread_functions();
+    //ecall_libc_functions();
+    //ecall_libcxx_functions();
+    //ecall_thread_functions();
+    
+    /*char * buffer = 0;
+    long length;
+    FILE * f = fopen ("Gibran_The_Prophet_DARPA.txt", "rb");
+    if (f)
+    {
+        fseek (f, 0, SEEK_END);
+        length = ftell (f);
+        fseek (f, 0, SEEK_SET);
+        buffer = (char*)malloc (length);
+        if (buffer)
+        {
+            fread (buffer, 1, length, f);
+        }
+        fclose (f);
+    }*/
+    
+    char* s1 = "This is a DARn long string containing DAfRgPA in the middle. Will it be recognized?";
+    int l1 = strlen(s1);
+    char* s2 = "jtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsPAlkffffd;fsh OL hflkdf dsoi";//100 bytes
+    int l2 = strlen(s2);
+    char* s3 = "jtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh DARlPAkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoi";//1000 bytes
+    int l3 = strlen(s3);
+    char* s4 = "jtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh DLLlPAkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh DLLlPAkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh DLLlPAkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh DLLlPAkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh DLLlPAkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh DLLlPAkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtD*ARP_Aj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh DLLlPAkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh DLLlPAkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh DLLlPAkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh DLLlPAkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoijtkl; dkfj kdl hfds f'ashjoi cio JIKIFJk joidf;'sdj fkdy so kdfjlsfDAdRsAlkffffd;fsh OL hflkdff dsoi";//10,000 bytes
+    int l4 = strlen(s4);
+    
+    int status;
+    int acceptLoc = -1;
+    printf("preparing automata\n");
+    prepDFA(global_eid, &status);
+    
+    printf("initializing automata\n");
+    initDFA(global_eid, &status);
+    
+    printf("running automata\n");
+    time_t startTime, endTime;
+	double elapsedTime;
+    startTime = clock();
+    runDFA(global_eid, &acceptLoc, s4, l4);
+    endTime = clock();
+	elapsedTime = (double)(endTime - startTime)/(CLOCKS_PER_SEC);
+    printf("running time: %.5fs\n", elapsedTime);
+    if(acceptLoc == -1){
+        printf("did not match\n");
+    }
+    else{
+        printf("match found! accepted at position %d\n", acceptLoc);
+    }
 
     /* Destroy the enclave */
     sgx_destroy_enclave(global_eid);
     
-    printf("Info: SampleEnclave successfully returned.\n");
+    //printf("Info: SampleEnclave successfully returned.\n");
 
-    printf("Enter a character before exit ...\n");
-    getchar();
+    //printf("Enter a character before exit ...\n");
+    //getchar();
     return 0;
 }
 

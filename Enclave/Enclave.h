@@ -35,35 +35,38 @@
 
 #include <stdlib.h>
 #include <assert.h>
+#include <math.h>
+#include "string.h"
+#include "sgx_trts.h"
+
 
 #if defined(__cplusplus)
 extern "C" {
 #endif
     
-#define MAX_STATES 1024 //size of block in terms of entries
-#define NUM_BLOCKS_POW 10
+#define MAX_STATES 15 //size of block in terms of entries
 #define BUCKET_SIZE 4
-#define STASH_SPACE 130 //should be something like 90+4*log_2(MAX_STATES) for 2^-80 prob of failure on each access
+#define STASH_SPACE 128 //should be something like 90+4*log_2(MAX_STATES) for 2^-80 prob of failure on each access, but make it a power of 2
+    
+typedef struct{
+    char transition;
+    int state;
+} Entry;
     
 typedef struct{
 	int actualAddr;
 	Entry transitions[MAX_STATES];//possibility that every node transitions on each symbol to another state
+	unsigned int leaf; //we have each block keep track of its leaf to avoid a bunch of linear scans of the posMap
 } Oram_Block;
 
 typedef struct{
 	Oram_Block blocks[BUCKET_SIZE];
 } Oram_Bucket;
 
-typedef_struct{
-    char transition;
-    int state;
-} Entry;
-
 extern Entry DFA[MAX_STATES*MAX_STATES];
-extern int DFASize;
 extern Oram_Bucket ORAM[MAX_STATES];
-extern int posMap[MAX_STATES];
-extern Oram_Block stash[STASH_SPACE];
+extern unsigned int posMap[MAX_STATES];
+extern Oram_Block stash[2*STASH_SPACE];
 extern int accStates[MAX_STATES];
 extern int accepting; //0 means no, any positive number means yes and it started at the index of that number
 extern Oram_Block row;
@@ -71,11 +74,13 @@ extern Oram_Block row;
 int nextPowerOfTwo(unsigned int num);
 void printf(const char *fmt, ...);
 
-int prepDFA(int size); //prepare DFA for reading in (only needs to be run once)
+int prepDFA(); //prepare DFA for reading in (only needs to be run once)
 int initDFA(); //start up or reboot the DFA
 int opOram(int index, Oram_Block* block, int write);
+void sortStash(int startIndex, int size, int flipped);
+void mergeStash(int startIndex, int size, int flipped);
 int opDFA(char input); //return >=1 if accepting state, 0 otherwise
-int runDFA(char* data, int length);
+int runDFA(char* data, int length); //return last op output
 
 #if defined(__cplusplus)
 }
