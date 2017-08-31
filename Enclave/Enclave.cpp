@@ -156,12 +156,10 @@ int prepDFA(){ //our hard-coded regex: *D.?A.?R.?P.?A*
 
 int initDFA(){ //initialize or reset DFA and ORAM
     int ret = 0;
-    //printf("HI!!\n");
-    //printf("MAX_STATES %d\n", MAX_STATES);
+
     accepting = 0;
     memset(posMap, 0, MAX_STATES*4);
     memset(ORAM, 0, MAX_STATES*sizeof(Oram_Bucket));
-    //memset(LinScan, 0, MAX_STATES*sizeof(Oram_Block));
     memset(stash, 0, STASH_SPACE*sizeof(Oram_Block));
     state = 0;
     
@@ -173,7 +171,6 @@ int initDFA(){ //initialize or reset DFA and ORAM
         
         ret += sgx_read_rand((uint8_t*)&posMap[i], sizeof(unsigned int));
         posMap[i] = posMap[i] % (MAX_STATES/2+1);
-        //printf("posmapi %d\n", posMap[i]);
     }
 
         //set stash empty
@@ -185,7 +182,6 @@ int initDFA(){ //initialize or reset DFA and ORAM
     for(int i = 0; i < MAX_STATES; i++){
         block.actualAddr = i;
         memcpy(&(block.transitions), &DFA[i*256], 256*sizeof(Entry));
-        //printf("oram results: %d %d %d %c\n", block.actualAddr, block.transitions[1].state, block.leaf, block.transitions[1].transition);
         opOram(i, &block, 1);
     }
 
@@ -198,15 +194,12 @@ int opOram(int index, Oram_Block* block, int write){ //the actual oram ops
     int match = 0;
     sgx_read_rand((uint8_t*)&newLeaf, sizeof(unsigned int));
     newLeaf = newLeaf % (MAX_STATES/2+1);
-    //printf("starting oram op");
     //linear scan over position map to select leaf where index lives and to replace it with new leaf
     for(int i = 0; i < MAX_STATES; i++){
         match = (index == i);
-        targetLeaf += match*posMap[i];//printf("targetLeaf %d\n", targetLeaf);
+        targetLeaf += match*posMap[i];
         posMap[i] = match*newLeaf + (1-match)*posMap[i];
-        //if(match) printf("matched leaf, updating posMap to %d\n", posMap[i]);
     }
-    //printf("target leaf: %d, new leaf: %d\n", targetLeaf, newLeaf);
     //read in a path down the tree
     int nodeNumber = MAX_STATES/2+targetLeaf;
     int stashIndex = 0;
@@ -219,12 +212,6 @@ int opOram(int index, Oram_Block* block, int write){ //the actual oram ops
         }
         nodeNumber = (nodeNumber-1)/2;
     }
-    
-      /*  printf("DEBUG: stash entries: ");
-    for(int i = 0; i < 150; i++){
-        printf(" (%d, %d,%c) ", stash[i].actualAddr, stash[i].transitions[0].state, stash[i].transitions[0].transition);
-        
-    }printf("\n");*/
     
     //sort entire stash of size 2*STASH_SPACE so we can ignore second half
     sortStash(0,2*STASH_SPACE, 0);
@@ -267,12 +254,6 @@ int opOram(int index, Oram_Block* block, int write){ //the actual oram ops
         memcpy(block, &row, sizeof(Oram_Block));
     }
     
-    /*printf("DEBUG: stash entries: ");
-    for(int i = 0; i < stashIndex; i++){
-        printf(" (%d, %d,%c) ", stash[i].actualAddr, stash[i].transitions[0].state, stash[i].transitions[0].transition);
-        
-    }printf("\n");*/
-    
     //write back path
     nodeNumber = MAX_STATES/2+targetLeaf;
     for(int i = (int)log2(MAX_STATES+1.1)-1; i>=0; i--){
@@ -280,8 +261,6 @@ int opOram(int index, Oram_Block* block, int write){ //the actual oram ops
         for(int j = 0; j < BUCKET_SIZE; j++){
             for(int k = 0; k < STASH_SPACE; k++){
                 int conditionsMet = (ORAM[nodeNumber].blocks[j].actualAddr == -1) && (stash[k].actualAddr != -1) && (((MAX_STATES/2)+targetLeaf-(div-1))/div == ((MAX_STATES/2)+stash[k].leaf-(div-1))/div);
-                //if(conditionsMet)printf("CONDITIONSMET = %d\n", conditionsMet);
-                //if conditionsMet, write stash block to oram and remove from stash
                 //write to oram
                 for(int l = 0; l < sizeof(Oram_Block); l++){
                     uint8_t v1 = ((uint8_t*)(&ORAM[nodeNumber].blocks[j]))[l];
@@ -315,8 +294,7 @@ void mergeStash(int startIndex, int size, int flipped){//bitonic merge
         int half = size/2;
         for(int i = 0; i < half; i++){
             //only swap if there is a dummy block (-1) that needs to be moved to the end
-            swap = ((stash[startIndex+i].actualAddr == -1) != flipped); //&& stash[startIndex+half+i].actualAddr != -1);
-            //if(!swap) printf("NOTSWAP: %d\n", stash[startIndex+i].actualAddr);
+            swap = ((stash[startIndex+i].actualAddr == -1) != flipped); 
             //compare and swap stash[startIndex+i] and stash[startIndex+i+half]
             memcpy(&row, &stash[startIndex+i], sizeof(Oram_Block));//use row as temp storage
             memcpy(&stash[startIndex+i], &stash[startIndex+i+half], sizeof(Oram_Block));
@@ -338,20 +316,17 @@ int opDFA(char input){ //return >0 if accepting state, 0 otherwise
         int oldAcc = accepting;
         accepting = 0;
         opOram(state, &block, 0);
-                //printf("oram results: %d %d %d %c\n", block.actualAddr, block.transitions[0].state, block.leaf, block.transitions[0].transition);
 
         for(int i = 0; i < 256; i++){
             changed = change || changed;
             change = (input == block.transitions[i].transition);
             change = change || (block.transitions[i].transition == 0 && !changed);
             state = state*(1-change) + (change)*block.transitions[i].state;
-            //printf("change: %d, state: %d\n", change, state);
         }
         
         for(int i = 0; i < MAX_STATES; i++){
             accepting = (accepting || (state == i && accStates[i]));
         }
-        //accepting *= state;
         //printf("DEBUG: input %c got us in state %d. Accepting? %d.\n", input, state, accepting);
         return accepting;
 }
@@ -361,7 +336,6 @@ int runDFA(char* data, int length){
     for(int i = 0; i < length; i++){
         ret = opDFA(data[i]);
         accLoc = (accLoc != -1 || !ret)*accLoc + (accLoc == -1 && ret)*i;
-        //printf("accLoc %d\n", accLoc);
         //accepts as long as it accepted at any point, not if the whole DFA accepts
         //because we're doing more of a string search thing here
     }

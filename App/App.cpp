@@ -243,33 +243,6 @@ int SGX_CDECL main(int argc, char *argv[])
         //getchar();
         return -1; 
     }
- 
-    /* Utilize edger8r attributes */
-    //edger8r_array_attributes();
-    //edger8r_pointer_attributes();
-    //edger8r_type_attributes();
-    //edger8r_function_attributes();
-    
-    /* Utilize trusted libraries */
-    //ecall_libc_functions();
-    //ecall_libcxx_functions();
-    //ecall_thread_functions();
-    
-    /*char * buffer = 0;
-    long length;
-    FILE * f = fopen ("Gibran_The_Prophet_DARPA.txt", "rb");
-    if (f)
-    {
-        fseek (f, 0, SEEK_END);
-        length = ftell (f);
-        fseek (f, 0, SEEK_SET);
-        buffer = (char*)malloc (length);
-        if (buffer)
-        {
-            fread (buffer, 1, length, f);
-        }
-        fclose (f);
-    }*/
     
     char* s1 = "This is a DARn long string containing DAfRgPA in the middle. Will it be recognized?";
     int l1 = strlen(s1);
@@ -305,11 +278,7 @@ int SGX_CDECL main(int argc, char *argv[])
 
     /* Destroy the enclave */
     sgx_destroy_enclave(global_eid);
-    
-    //printf("Info: SampleEnclave successfully returned.\n");
 
-    //printf("Enter a character before exit ...\n");
-    //getchar();
     return 0;
 }
 
