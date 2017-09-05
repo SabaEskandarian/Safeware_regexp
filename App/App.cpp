@@ -42,6 +42,29 @@
 #include "App.h"
 #include "Enclave_u.h"
 #include <time.h>
+//#include "../Enclave/Enclave.h"
+
+//these definitions are for the baseline. To change the real settings, see Enclave.h
+#define MAX_STATES 15 //size of block in terms of entries
+#define BUCKET_SIZE 4
+#define STASH_SPACE 128 //should be something like 90+4*log_2(MAX_STATES) for 2^-80 prob of failure on each access, but make it a power of 2
+
+typedef struct{
+    char transition;
+    int state;
+} Entry;
+
+typedef struct{
+	int actualAddr;
+	Entry transitions[256];//possibility of a different transition for each symbol
+	unsigned int leaf; //we have each block keep track of its leaf to avoid a bunch of linear scans of the posMap
+} Oram_Block;
+
+Entry DFA[MAX_STATES*256] = {0};
+int accStates[MAX_STATES];
+int accepting; //0 means no, any positive number means yes and it started at the index of that number
+int state;
+Oram_Block block; //use this outside opOram
 
 
 /* Global EID shared by multiple threads */
@@ -229,6 +252,120 @@ void ocall_print_string(const char *str)
     printf("%s", str);
 }
 
+int prepDFA(){ //our hard-coded regex: *D.?A.?R.?P.?A*
+    //NOTE: code from this function is for testing only! It would not provide security in a real enclave because the code is visible to outsiders. 
+    //  It would have to be loaded encrypted from outside
+
+    //set up accepting states
+    //for(int i = 0; i < 9; i++) accStates[i] = 0;
+    accStates[9] = 1;
+    //for(int i = 10; i < MAX_STATES; i++) accStates[i] = 0;
+    
+    //set up DFA outside of ORAM
+    //state 0
+    DFA[0].state = 1;
+    DFA[0].transition = 'D';
+    //for(int i = 0; i < 256; i++){DFA[i].state = 0; DFA[i] = 0;}
+    //state 1
+    DFA[256].state = 1;
+    DFA[256].transition = 'D';
+    DFA[256+1].state = 3;
+    DFA[256+1].transition = 'A';
+    DFA[256+2].state = 2;
+    DFA[256+2].transition = 0;
+    //for(int i = 256+3; i < 2*256; i++){DFA[i].state = 0; DFA[i].transition = 0;}
+    //state 2
+    DFA[2*256].state = 1;
+    DFA[2*256].transition = 'D';
+    DFA[2*256+1].state = 3;
+    DFA[2*256+1].transition = 'A';
+    //for(int i = 2*256+2; i < 3*256; i++){DFA[i].state = 0; DFA[i].transition = 0;}
+    //state 3
+    DFA[3*256].state = 1;
+    DFA[3*256].transition = 'D';
+    DFA[3*256+1].state = 5;
+    DFA[3*256+1].transition = 'R';
+    DFA[3*256+2].state = 4;
+    DFA[3*256+2].transition = 0;
+    //for(int i = 3*256+3; i < 4*256; i++){DFA[i].state = 0; DFA[i].transition = 0;}
+    //state 4
+    DFA[4*256].state = 1;
+    DFA[4*256].transition = 'D';
+    DFA[4*256+1].state = 5;
+    DFA[4*256+1].transition = 'R';
+    //for(int i = 4*256+2; i < 5*256; i++){DFA[i].state = 0; DFA[i].transition = 0;}
+    //state 5
+    DFA[5*256].state = 1;
+    DFA[5*256].transition = 'D';
+    DFA[5*256+1].state = 7;
+    DFA[5*256+1].transition = 'P';
+    DFA[5*256+2].state = 6;
+    DFA[5*256+2].transition = 0;
+    //for(int i = 5*256+3; i < 6*256; i++){DFA[i].state = 0; DFA[i].transition = 0;}
+    //state 6
+    DFA[6*256].state = 1;
+    DFA[6*256].transition = 'D';
+    DFA[6*256+1].state = 7;
+    DFA[6*256+1].transition = 'P';
+    //for(int i = 6*256+2; i < 7*256; i++){DFA[i].state = 0; DFA[i].transition = 0;}
+    //state 7
+    DFA[7*256].state = 1;
+    DFA[7*256].transition = 'D';
+    DFA[7*256+1].state = 9;
+    DFA[7*256+1].transition = 'A';
+    DFA[7*256+2].state = 8;
+    DFA[7*256+2].transition = 0;
+    //for(int i = 7*256+3; i < 8*256; i++){DFA[i].state = 0; DFA[i].transition = 0;}
+    //state 8
+    DFA[8*256].state = 1;
+    DFA[8*256].transition = 'D';
+    DFA[8*256+1].state = 9;
+    DFA[8*256+1].transition = 'A';
+    //for(int i = 8*256+2; i < 9*256; i++){DFA[i].state = 0; DFA[i].transition = 0;}
+    //state 9
+    DFA[9*256].state = 9;
+    DFA[9*256].transition = 0;
+    //for(int i = 9*256+1; i < 10*256; i++){DFA[i].state = 0; DFA[i].transition = 0;}
+    //rest of space 
+    //for(int i = 10*256; i < 256*256; i++){DFA[i].state = 0; DFA[i].transition = 0;}
+    
+    return 0;
+}
+
+int opDFABaseline(char input){ //return >0 if accepting state, 0 otherwise
+        int change = 0, changed = 0;
+        int oldAcc = accepting;
+        accepting = 0;
+        //opOram(state, &block, 0);
+        //linear scan
+        memset(&block, 0, sizeof(Oram_Block));
+        memcpy(&(block.transitions[0]), (uint8_t*)&DFA[state*256], 256*sizeof(Entry));
+        printf("fdfd %d %d", block.transitions[0].transition, input);
+       
+        for(int i = 0; i < 256; i++){
+            if(input == block.transitions[i].transition || (block.transitions[i].transition == 0 && !changed)){
+                changed = 1;
+                state = block.transitions[i].state;
+            }
+        }       
+
+        accepting = accStates[state];
+        printf("DEBUG: input %c got us in state %d. Accepting? %d.\n", input, state, accepting);
+        return accepting;
+}
+
+int runDFABaseline(char* data, int length){
+    int ret = -1, accLoc = -1;
+    for(int i = 0; i < length; i++){
+        ret = opDFABaseline(data[i]);
+        accLoc = (accLoc != -1 || !ret)*accLoc + (accLoc == -1 && ret)*i;
+        //accepts as long as it accepted at any point, not if the whole DFA accepts
+        //because we're doing more of a string search thing here
+    }
+    return accLoc;
+}
+
+
 
 /* Application entry */
 int SGX_CDECL main(int argc, char *argv[])
@@ -256,7 +393,9 @@ int SGX_CDECL main(int argc, char *argv[])
     int status;
     int acceptLoc = -1;
     printf("preparing automata\n");
-    prepDFA(global_eid, &status);
+    //prepDFA(global_eid, &status);
+    prepDFA();
+
     
     //printf("initializing automata\n");
     //initDFA(global_eid, &status);
@@ -265,7 +404,8 @@ int SGX_CDECL main(int argc, char *argv[])
     time_t startTime, endTime;
 	double elapsedTime;
     startTime = clock();
-    runDFA(global_eid, &acceptLoc, s2, l2);
+    //runDFA(global_eid, &acceptLoc, s2, l2);
+    acceptLoc = runDFABaseline(s2, l2);
     endTime = clock();
 	elapsedTime = (double)(endTime - startTime)/(CLOCKS_PER_SEC);
     printf("running time: %.5fs\n", elapsedTime);
