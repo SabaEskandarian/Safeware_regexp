@@ -1,5 +1,5 @@
 Sample code to run a regex query for D.?A.?R.?P.?A
-
+   
 -Edit App/App.cpp to use one of strings s1-s4
 -Edit Enclave/Enclave.h to set MAX_STATES, the maximum number of states 
  supported by the DFA evaluator and the size to which all DFAs will be obliviously padded
