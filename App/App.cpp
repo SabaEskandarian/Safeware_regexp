@@ -45,7 +45,7 @@
 //#include "../Enclave/Enclave.h"
 
 //these definitions are for the baseline. To change the real settings, see Enclave.h
-#define MAX_STATES 15 //size of block in terms of entries
+#define MAX_STATES 2047 //size of block in terms of entries
 #define BUCKET_SIZE 4
 #define STASH_SPACE 128 //should be something like 90+4*log_2(MAX_STATES) for 2^-80 prob of failure on each access, but make it a power of 2
 
@@ -393,8 +393,8 @@ int SGX_CDECL main(int argc, char *argv[])
     int status;
     int acceptLoc = -1;
     printf("preparing automata\n");
-    //prepDFA(global_eid, &status);
-    prepDFA();
+    prepDFA(global_eid, &status);
+    //prepDFA();
 
     
     //printf("initializing automata\n");
@@ -404,8 +404,8 @@ int SGX_CDECL main(int argc, char *argv[])
     time_t startTime, endTime;
 	double elapsedTime;
     startTime = clock();
-    //runDFA(global_eid, &acceptLoc, s2, l2);
-    acceptLoc = runDFABaseline(s2, l2);
+    runDFA(global_eid, &acceptLoc, s2, l2);
+    //acceptLoc = runDFABaseline(s4, l4);
     endTime = clock();
 	elapsedTime = (double)(endTime - startTime)/(CLOCKS_PER_SEC);
     printf("running time: %.5fs\n", elapsedTime);
