@@ -34,6 +34,7 @@
 #define _ENCLAVE_H_
 
 #include <stdlib.h>
+#include <stdint.h>
 #include <assert.h>
 #include <math.h>
 #include "string.h"
@@ -50,7 +51,7 @@ extern "C" {
     
 typedef struct{
     char transition;
-    int state;
+    uint8_t state;
 } Entry;
     
 typedef struct{
